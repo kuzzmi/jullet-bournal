@@ -1,0 +1,55 @@
+.Editor {
+    flex: 1;
+    max-width: 600px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.DraftEditor-editorContainer {
+    margin-top: 20px;
+}
+
+.styleButton {
+    display: inline-block;
+    font-weight: 600;
+    margin: 0 10px;
+}
+
+.styleButton.active {
+    color: blue;
+}
+
+.Editor h1,
+.Editor h2,
+.Editor h3,
+.Editor h4,
+.Editor h5,
+.Editor h6 {
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+}
+
+.Editor .public-DraftStyleDefault-pre {
+    font-size: 14px;
+    font-family: 'Roboto Mono', monospace;
+    background-color: #fafafa;
+    padding: 10px 15px;
+}
+
+.Editor .paragraph {
+    margin: 15px 0;
+}
+
+.Editor blockquote {
+    font-style: italic;
+    border-left: 10px solid #fafafa;
+    padding-left: 1em;
+    margin: 0;
+}
+
+.Editor blockquote .paragraph {
+    margin: 0;
+}
+
+.Editor .public-DraftStyleDefault-pre pre {
+    margin: 0;
+}
