@@ -8,16 +8,6 @@
     margin-top: 20px;
 }
 
-.styleButton {
-    display: inline-block;
-    font-weight: 600;
-    margin: 0 10px;
-}
-
-.styleButton.active {
-    color: blue;
-}
-
 .Editor h1,
 .Editor h2,
 .Editor h3,
@@ -52,4 +42,35 @@
 
 .Editor .public-DraftStyleDefault-pre pre {
     margin: 0;
+}
+
+.Editor .tools {
+    background-color: #3C3C3C;
+    color: white;
+    padding: 0px 20px;
+    border-radius: 5px;
+    display: flex;
+    flex: 1;
+}
+
+.styleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0 10px;
+    height: 40px;
+    width: 40px;
+}
+
+.styleButton:hover {
+    background-color: rgba(255,255,255,.1);
+    cursor: pointer;
+}
+
+.styleButton.active {
+    color: #00dcff;
+    border-left: 1px solid rgba(255,255,255,.1);
+    border-right: 1px solid rgba(255,255,255,.1);
+    width: 38px;
 }
