@@ -13,9 +13,20 @@ class App extends Component {
 
     getPage = () => this.state.pages[this.state.pageId];
 
-    onPrevPage = () => this.setState({ pageId: this.state.pageId - 1 });
+    prevPage = () => this.setState({ pageId: this.state.pageId - 1 });
 
-    onNextPage = () => this.setState({ pageId: this.state.pageId + 1 });
+    nextPage = () => this.setState({ pageId: this.state.pageId + 1 });
+
+    createPage = ({ editorState }) => {
+        const { pageId, pages } = this.state;
+        this.setState({
+            pages: {
+                ...pages,
+                [pageId + 1]: editorState,
+            },
+            pageId: pageId + 1,
+        });
+    }
 
     savePage = ({ editorState }) => {
         const { pageId, pages } = this.state;
@@ -51,13 +62,14 @@ class App extends Component {
             <div className="App">
                 <div>
                     <div>
-                        <button onClick={ this.onPrevPage }>Prev</button>
-                        <button onClick={ this.onNextPage }>Next</button>
+                        <button onClick={ this.prevPage }>Prev</button>
+                        <button onClick={ this.nextPage }>Next</button>
                     </div>
                     { this.renderPages() }
                 </div>
                 <Editor
                     page={ page }
+                    onCreatePage={ this.createPage }
                     onChange={ this.savePage }
                     />
             </div>

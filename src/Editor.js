@@ -5,6 +5,7 @@ import {
     RichUtils,
     Modifier,
     convertFromRaw,
+    getDefaultKeyBinding,
 } from 'draft-js';
 import './Editor.css';
 
@@ -26,6 +27,13 @@ function insertNewline(editorState) {
         editorState.getSelection()
     );
     return EditorState.push(editorState, contentState, 'split-block');
+}
+
+function keyBindingFn(e) {
+    if (e.keyCode === 78 /* `N` key */ && e.nativeEvent.altKey) {
+        return 'add-new-page';
+    }
+    return getDefaultKeyBinding(e);
 }
 
 const initialContentState = {
@@ -60,6 +68,7 @@ export default class extends Component {
         this.toggleBlockType  = this.toggleBlockType.bind(this);
         this.onTab            = this.onTab.bind(this);
         this.onReturn         = this.onReturn.bind(this);
+        this.createPage       = this.createPage.bind(this);
     }
 
     componentWillReceiveProps({ page }) {
@@ -69,8 +78,21 @@ export default class extends Component {
     }
 
     handleKeyCommand(command) {
-        const { editorState } = this.state;
         console.log(command);
+
+        const { editorState } = this.state;
+
+        switch (command) {
+            case 'add-new-page':
+                if (this.createPage()) {
+                    return 'handled';
+                } else {
+                    break;
+                }
+            default:
+                break;
+        }
+
         const newState = RichUtils.handleKeyCommand(editorState, command);
         if (newState) {
             this.onChange(newState);
@@ -101,6 +123,37 @@ export default class extends Component {
         return 'not-handled';
     }
 
+    createPage() {
+        const { editorState } = this.state;
+        const selection = editorState.getSelection();
+        const block = editorState
+            .getCurrentContent()
+            .getBlockForKey(selection.getStartKey());
+        const start = selection.getStartOffset();
+        const end = selection.getEndOffset();
+        const selectedText = block.getText().slice(start, end);
+        if (!selectedText) {
+            return false;
+        }
+
+        const contentState = {
+            entityMap: {},
+            blocks: [{
+                text: selectedText,
+                type: 'header-one',
+            }, {
+                text: '',
+                type: 'unstyled',
+            }],
+        };
+
+        this.props.onCreatePage({
+            editorState: EditorState.createWithContent(convertFromRaw(contentState))
+        });
+
+        return true;
+    }
+
     toggleBlockType(type) {
         const { editorState } = this.state;
         this.onChange(RichUtils.toggleBlockType(editorState, type));
@@ -112,13 +165,14 @@ export default class extends Component {
         return (
             <div className="Editor">
                 <BlockStyleControls
-                    editorState={editorState}
+                    editorState={ editorState }
                     onToggle={ this.toggleBlockType }
                     />
                 <Editor
                     ref="editor"
                     editorState={ editorState }
                     handleKeyCommand={ this.handleKeyCommand }
+                    keyBindingFn={ keyBindingFn }
                     blockStyleFn={ blockStyleFn }
                     onChange={ this.onChange }
                     handleReturn={ this.onReturn }
