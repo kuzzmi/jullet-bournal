@@ -7,10 +7,8 @@ import { EditorState } from 'draft-js';
 
 class App extends Component {
     state = {
-        pages: {
-            1: EditorState.createEmpty(),
-        },
-        pageId: 1,
+        pages: {},
+        pageId: 0,
     };
 
     getPage = () => this.state.pages[this.state.pageId];
