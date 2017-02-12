@@ -13,9 +13,21 @@
 .Editor h3,
 .Editor h4,
 .Editor h5,
-.Editor h6 {
+.Editor h6,
+.Editor .titleInput {
     font-family: 'Lato', sans-serif;
     font-weight: 900;
+}
+
+.Editor .titleInput {
+    font-size: 2.2em;
+    border: none;
+    outline: 0;
+    margin: .67em 0;
+}
+
+.Editor .titleInput:focus {
+    outline: 0;
 }
 
 .Editor .public-DraftStyleDefault-pre {

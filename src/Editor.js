@@ -10,6 +10,7 @@ import {
 import './Editor.css';
 
 import BlockStyleControls from './ToolBox.js';
+import TitleInput from './TitleInput.js';
 
 function blockStyleFn(contentBlock) {
     const type = contentBlock.getType();
@@ -49,10 +50,8 @@ export default class extends Component {
         super(props);
 
         this.state = {
-            editorState:
-                props.page || EditorState.createWithContent(
-                    convertFromRaw(initialContentState)
-                )
+            editorState: props.page.editorState || EditorState.createEmpty(),
+            title: props.page.title
         };
 
         this.onChange = (editorState, focus) => {
@@ -60,9 +59,12 @@ export default class extends Component {
             this.setState({
                 editorState
             }, () => {
-                setTimeout(() => this.refs.editor.focus(), 0);
+                focus && setTimeout(this.focusEditor, 0);
             });
         };
+
+        this.onChangeTitle = title => this.setState({ title });
+        this.focusEditor = () => this.refs.editor.focus();
 
         this.handleKeyCommand = this.handleKeyCommand.bind(this);
         this.toggleBlockType  = this.toggleBlockType.bind(this);
@@ -160,13 +162,18 @@ export default class extends Component {
     }
 
     render() {
-        const { editorState } = this.state;
+        const { title, editorState } = this.state;
 
         return (
             <div className="Editor">
                 <BlockStyleControls
                     editorState={ editorState }
                     onToggle={ this.toggleBlockType }
+                    />
+                <TitleInput
+                    onChange={ this.onChangeTitle }
+                    title={ title }
+                    onEnterPress={ this.focusEditor }
                     />
                 <Editor
                     ref="editor"

@@ -5,9 +5,25 @@ import Editor from './Editor.js';
 
 import { EditorState } from 'draft-js';
 
+class Page {
+    constructor({ title, editorState, id }) {
+        this.title = title;
+        this.editorState = editorState;
+        this.id = id;
+    }
+}
+
+const firstPage = new Page({
+    title: '',
+    editorState: null,
+    id: 0,
+});
+
 class App extends Component {
     state = {
-        pages: {},
+        pages: {
+            0: firstPage,
+        },
         pageId: 0,
     };
 
