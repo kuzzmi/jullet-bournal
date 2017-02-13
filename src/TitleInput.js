@@ -13,6 +13,10 @@ class TitleInput extends React.Component {
 
     handleTitleChange = e => this.props.onChange(e.target.value);
 
+    focus() {
+        this.input.focus();
+    }
+
     render() {
         const {
             onChange,
@@ -22,6 +26,7 @@ class TitleInput extends React.Component {
 
         return (
             <input
+                ref={ e => e && ( this.input = e ) }
                 value={ title }
                 placeholder="Page Title"
                 className="titleInput"

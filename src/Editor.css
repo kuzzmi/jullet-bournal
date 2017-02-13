@@ -1,6 +1,4 @@
 .Editor {
-    flex: 1;
-    max-width: 600px;
     font-family: 'Crimson Text', sans-serif;
 }
 
@@ -17,13 +15,14 @@
 .Editor .titleInput {
     font-family: 'Lato', sans-serif;
     font-weight: 900;
+    color: #3c3c3c;
 }
 
 .Editor .titleInput {
-    font-size: 2.2em;
+    font-size: 2.5em;
     border: none;
     outline: 0;
-    margin: .67em 0;
+    margin: .37em 0;
 }
 
 .Editor .titleInput:focus {

@@ -4,7 +4,6 @@ import {
     EditorState,
     RichUtils,
     Modifier,
-    convertFromRaw,
     getDefaultKeyBinding,
 } from 'draft-js';
 import './Editor.css';
@@ -37,28 +36,20 @@ function keyBindingFn(e) {
     return getDefaultKeyBinding(e);
 }
 
-const initialContentState = {
-    entityMap: {},
-    blocks: [{
-        text: 'Your words',
-        type: 'unstyled',
-    }],
-};
-
 export default class extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            editorState: props.page.editorState || EditorState.createEmpty(),
-            title: props.page.title
+            ...props.page,
         };
 
         this.onChange = (editorState, focus) => {
-            props.onChange({ editorState });
-            this.setState({
-                editorState
-            }, () => {
+            const { title, id } = this.state;
+
+            props.onChange({ editorState, title, id });
+
+            this.setState({ editorState }, () => {
                 focus && setTimeout(this.focusEditor, 0);
             });
         };
@@ -73,9 +64,20 @@ export default class extends Component {
         this.createPage       = this.createPage.bind(this);
     }
 
-    componentWillReceiveProps({ page }) {
-        if (page !== this.props.page) {
-            this.onChange(page || EditorState.createEmpty());
+    componentDidMount() {
+        const { title } = this.state;
+        if (!title) {
+            this.refs.titleInput.focus();
+        } else {
+            this.focusEditor();
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.page.id !== this.state.id) {
+            this.setState({
+                ...nextProps.page,
+            });
         }
     }
 
@@ -126,34 +128,43 @@ export default class extends Component {
     }
 
     createPage() {
-        const { editorState } = this.state;
+        const { editorState, id } = this.state;
         const selection = editorState.getSelection();
-        const block = editorState
-            .getCurrentContent()
-            .getBlockForKey(selection.getStartKey());
-        const start = selection.getStartOffset();
-        const end = selection.getEndOffset();
-        const selectedText = block.getText().slice(start, end);
-        if (!selectedText) {
-            return false;
-        }
+        // const block = editorState
+        //     .getCurrentContent()
+        //     .getBlockForKey(selection.getStartKey());
+        // const start = selection.getStartOffset();
+        // const end = selection.getEndOffset();
+        // const selectedText = block.getText().slice(start, end);
 
-        const contentState = {
-            entityMap: {},
-            blocks: [{
-                text: selectedText,
-                type: 'header-one',
-            }, {
-                text: '',
-                type: 'unstyled',
-            }],
-        };
+        const contentState = editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity(
+            'LINK',
+            'MUTABLE',
+            { href: 'http://www.zombo.com' }
+        );
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        const contentStateWithLink = Modifier.applyEntity(
+            contentState,
+            selection,
+            entityKey
+        );
 
-        this.props.onCreatePage({
-            editorState: EditorState.createWithContent(convertFromRaw(contentState))
-        });
+        // if (!selectedText) {
+        //     return false;
+        // }
 
-        return true;
+        // this.props.onCreatePage({
+        //     editorState: EditorState.createEmpty(),
+        //     title: selectedText,
+        //     id
+        // });
+
+        const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithLink });
+
+        this.onChange(newEditorState);
+
+        // return true;
     }
 
     toggleBlockType(type) {
@@ -166,11 +177,8 @@ export default class extends Component {
 
         return (
             <div className="Editor">
-                <BlockStyleControls
-                    editorState={ editorState }
-                    onToggle={ this.toggleBlockType }
-                    />
                 <TitleInput
+                    ref="titleInput"
                     onChange={ this.onChangeTitle }
                     title={ title }
                     onEnterPress={ this.focusEditor }
@@ -189,3 +197,7 @@ export default class extends Component {
         );
     }
 }
+                // <BlockStyleControls
+                //     editorState={ editorState }
+                //     onToggle={ this.toggleBlockType }
+                //     />

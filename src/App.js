@@ -2,27 +2,16 @@ import React, { Component } from 'react';
 import './App.css';
 
 import Editor from './Editor.js';
-
 import { EditorState } from 'draft-js';
-
-class Page {
-    constructor({ title, editorState, id }) {
-        this.title = title;
-        this.editorState = editorState;
-        this.id = id;
-    }
-}
-
-const firstPage = new Page({
-    title: '',
-    editorState: null,
-    id: 0,
-});
 
 class App extends Component {
     state = {
         pages: {
-            0: firstPage,
+            0: {
+                id: 0,
+                title: 'Hello World!',
+                editorState: EditorState.createEmpty(),
+            },
         },
         pageId: 0,
     };
@@ -33,23 +22,18 @@ class App extends Component {
 
     nextPage = () => this.setState({ pageId: this.state.pageId + 1 });
 
-    createPage = ({ editorState }) => {
-        const { pageId, pages } = this.state;
-        this.setState({
-            pages: {
-                ...pages,
-                [pageId + 1]: editorState,
-            },
-            pageId: pageId + 1,
-        });
+    createPage = page => {
+        const id = page.id + 1;
+        this.updatePage({ ...page, id })
     }
 
-    savePage = ({ editorState }) => {
-        const { pageId, pages } = this.state;
+    updatePage = page => {
         this.setState({
             pages: {
-                ...pages,
-                [pageId]: editorState,
+                ...this.state.pages,
+                [page.id]: {
+                    ...page,
+                },
             },
         });
     }
@@ -58,6 +42,8 @@ class App extends Component {
 
     renderPages = () => {
         const { pageId, pages } = this.state;
+
+        console.log(pages);
 
         return (
             <ul>
@@ -74,6 +60,7 @@ class App extends Component {
 
     render() {
         const page = this.getPage();
+
         return (
             <div className="App">
                 <div>
@@ -83,11 +70,15 @@ class App extends Component {
                     </div>
                     { this.renderPages() }
                 </div>
-                <Editor
-                    page={ page }
-                    onCreatePage={ this.createPage }
-                    onChange={ this.savePage }
-                    />
+                <div className="grid-container">
+                    <div className="prefix-10 grid-80 mobile-prefix-0 mobile-grid-100">
+                        <Editor
+                            page={ page }
+                            onCreatePage={ this.createPage }
+                            onChange={ this.updatePage }
+                            />
+                    </div>
+                </div>
             </div>
         );
     }
